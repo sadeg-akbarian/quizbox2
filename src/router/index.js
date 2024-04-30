@@ -16,6 +16,16 @@ const routes = [
     component: () =>
       import(/* webpackChunkName: "about" */ "../views/AboutView.vue"),
   },
+  {
+    path: "/data",
+    name: "theData",
+    component: () => import("../views/DataView.vue"),
+  },
+  {
+    path: "/admincontrol",
+    name: "adminControlPanel",
+    component: () => import("../views/AdminControlPanel.vue"),
+  },
 ];
 
 const router = createRouter({
