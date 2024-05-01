@@ -14,6 +14,16 @@
       Sorry, no entry was found!!!
     </div>
     <div class="not-found-triangle" :style="{ display: displayNoEntry }"></div>
+    <label for="selectAGroup">Which group:</label>
+    <select
+      name="groupSelection"
+      id="selectAGroup"
+      @click="groupSelection($event), findFittingQuestions()"
+    >
+      <option value="">All groups</option>
+      <option :value="idForHtmlAndCss">Basic HTML and CSS</option>
+      <option :value="idForJs">Basic JS</option>
+    </select>
   </div>
   <ol>
     <li v-for="question of questionsSorted" :key="question.id">
@@ -34,6 +44,10 @@ export default {
       suggestedQuestion: "",
       fittingQuestions: [],
       displayNoEntry: "none",
+      whichGroupIsDisplayed: "",
+      idForHtmlAndCss: "c76668d0-ce3a-48a7-acd5-0f54ad6818e1",
+      idForJs: "9d5ae045-ef9a-4068-bc6c-1b102bda5f55",
+      wasTheGroupChanged: true,
     };
   },
   methods: {
@@ -41,18 +55,21 @@ export default {
       const allData = JSON.parse(localStorage.getItem("allData"));
       this.backendData = allData;
     },
-    questionsSortedByDate() {
+    questionsSortedByDate(whichDataShouldBeSorted) {
       // Damit die backend-Daten nicht verändert werden, erstelle ich ein Klon in der Konstanten questions für das spätere Displayen der Fragen
-      const questions = structuredClone(this.backendData.questions);
+      const questions = structuredClone(whichDataShouldBeSorted);
+
       // In der Konstanten dateArray wird jeweils das Erstellungsdatum jeder einzelnen Frage gespeichert
       const dateArray = [];
       for (let question of questions) {
         dateArray.push(question.createdAt);
       }
+
       // In der Konstanten sortedDates wird dateArray neu geordnet in absteigender Reihenfolge, von neu nach alt
       const sortedDates = dateArray.sort((a, b) => {
         return b - a;
       });
+
       // Da einige Fragen genau dieselben Dates haben, speichere ich nun erst die einzigartigen IDs der Fragen in der Konstanten sortedIDs
       const sortedIDs = [];
       for (let date of sortedDates) {
@@ -68,6 +85,7 @@ export default {
           }
         }
       }
+
       const sortedArray = [];
       // In der Konstanten sortedArray werden nun alle Fragen von neu nach alt gespeichert
       for (let id of sortedIDs) {
@@ -79,52 +97,97 @@ export default {
       }
       this.questionsSorted = sortedArray;
     },
-    whichGroupIsIt(theGroupId) {
-      if (theGroupId === this.backendData.groups[0].id) {
+    whichGroupIsIt(theGroup) {
+      if (theGroup === this.backendData.groups[0].id) {
         return this.backendData.groups[0].title;
       } else {
         return this.backendData.groups[1].title;
       }
     },
-    findFittingQuestions() {
-      this.fittingQuestions.length = 0;
-      const suggestedQuestionInLowCase = this.suggestedQuestion.toLowerCase();
-      console.log(suggestedQuestionInLowCase);
-      for (let question of this.backendData.questions) {
-        const givenQuestionsInLowCase = question.question.toLowerCase();
-        console.log(givenQuestionsInLowCase);
-        const isItIncluded = givenQuestionsInLowCase.includes(
-          suggestedQuestionInLowCase
-        );
-        console.log(isItIncluded);
-        if (isItIncluded) {
-          this.fittingQuestions.push(question);
+    groupSelection(event) {
+      if (this.whichGroupIsDisplayed !== event.target.value) {
+        this.whichGroupIsDisplayed = event.target.value;
+        this.wasTheGroupChanged = true;
+      } else {
+        this.wasTheGroupChanged = false;
+      }
+    },
+    sortByGroup(whichArrayToBeSorted) {
+      const newArraySortedByGroup = [];
+      for (let question of whichArrayToBeSorted) {
+        if (question.groupId === this.whichGroupIsDisplayed) {
+          newArraySortedByGroup.push(question);
         }
       }
-      if (this.fittingQuestions.length > 0) {
-        this.questionsSorted = this.fittingQuestions;
-        this.suggestedQuestion = "";
-      } else {
-        this.displayNoEntry = "block";
+      return newArraySortedByGroup;
+    },
+    findFittingQuestions() {
+      if (this.wasTheGroupChanged) {
+        if (this.suggestedQuestion === "") {
+          if (this.whichGroupIsDisplayed === "") {
+            this.questionsSortedByDate(this.backendData.questions);
+          } else {
+            const arraySortedByGroup = this.sortByGroup(
+              this.backendData.questions
+            );
+            this.questionsSorted = arraySortedByGroup;
+          }
+        } else {
+          this.fittingQuestions.length = 0;
+          const suggestedQuestionInLowCase =
+            this.suggestedQuestion.toLowerCase();
+          for (let question of this.backendData.questions) {
+            const givenQuestionsInLowCase = question.question.toLowerCase();
+            const isItIncluded = givenQuestionsInLowCase.includes(
+              suggestedQuestionInLowCase
+            );
+            if (isItIncluded) {
+              this.fittingQuestions.push(question);
+            }
+          }
+          if (this.fittingQuestions.length > 0) {
+            if (this.whichGroupIsDisplayed === "") {
+              this.questionsSortedByDate(this.fittingQuestions);
+            } else {
+              const fittingQuestionsSortedByGroup = [];
+              for (let question of this.fittingQuestions) {
+                if (question.groupId === this.whichGroupIsDisplayed) {
+                  fittingQuestionsSortedByGroup.push(question);
+                }
+              }
+              if (fittingQuestionsSortedByGroup.length > 0) {
+                this.questionsSortedByDate(fittingQuestionsSortedByGroup);
+              } else {
+                this.displayNoEntry = "block";
+              }
+            }
+          } else {
+            this.displayNoEntry = "block";
+          }
+        }
       }
     },
   },
   created() {
     this.getDataFromLocalStorage();
-    this.questionsSortedByDate();
+    this.questionsSortedByDate(this.backendData.questions);
   },
 };
 </script>
 
 <style scoped>
-label {
-  margin-right: 0.5rem;
-  display: none;
-}
-
 .inputArea {
   display: flex;
   position: relative;
+  align-items: center;
+}
+
+label:first-child {
+  display: none;
+}
+
+label {
+  margin-inline: 0.5rem;
 }
 
 .searchElement {

@@ -11,7 +11,7 @@ export default {
   },
   name: "GetAllBackendData",
   props: {
-    backendData: Array,
+    backendData: Object,
   },
 };
 </script>
