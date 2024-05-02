@@ -11,6 +11,47 @@
   <router-view />
 </template>
 
+<script>
+export default {
+  data() {
+    return {
+      localHost: "http://localhost:3000/",
+      allBackendData: {
+        highscore: null,
+        groups: null,
+        questions: null,
+      },
+    };
+  },
+  methods: {
+    fetchAllData(xxx) {
+      fetch(this.localHost + xxx)
+        .then((response) => {
+          if (response.ok === true) {
+            return response.json();
+          } else {
+            alert("Error: Could not be loaded!");
+          }
+        })
+        .then((data) => {
+          this.allBackendData[xxx] = data;
+          if (xxx === "questions") {
+            localStorage.setItem(
+              "allData",
+              JSON.stringify(this.allBackendData)
+            );
+          }
+        });
+    },
+  },
+  created() {
+    this.fetchAllData("highscore");
+    this.fetchAllData("groups");
+    this.fetchAllData("questions");
+  },
+};
+</script>
+
 <style>
 *,
 ::before,

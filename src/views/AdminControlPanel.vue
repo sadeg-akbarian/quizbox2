@@ -1,30 +1,36 @@
 <template>
-  <div class="inputArea">
-    <label for="searchElement">Type in your question</label>
-    <input
-      type="text"
-      placeholder="Type in your question"
-      id="searchElement"
-      class="searchElement"
-      v-model.trim="suggestedQuestion"
-      @click="displayNoEntry = 'none'"
-    />
-    <button type="button" @click="findFittingQuestions">&#128270;</button>
-    <div class="not-found" :style="{ display: displayNoEntry }">
-      Sorry, no entry was found!!!
+  <form>
+    <div class="suggestionAndSelection">
+      <label for="searchElement">Type in your question</label>
+      <input
+        type="text"
+        placeholder="Type in your question"
+        id="searchElement"
+        class="searchElement"
+        v-model.trim="suggestedQuestion"
+        @click="displayNoEntry = 'none'"
+      />
+      <button type="button" @click="findFittingQuestions">&#128270;</button>
+      <div class="not-found" :style="{ display: displayNoEntry }">
+        Sorry, no entry was found!!!
+      </div>
+      <div
+        class="not-found-triangle"
+        :style="{ display: displayNoEntry }"
+      ></div>
+      <label for="selectAGroup">Which group:</label>
+      <select
+        name="groupSelection"
+        id="selectAGroup"
+        @click="groupSelection($event), findFittingQuestions()"
+      >
+        <option value="">All groups</option>
+        <option :value="idForHtmlAndCss">Basic HTML and CSS</option>
+        <option :value="idForJs">Basic JS</option>
+      </select>
     </div>
-    <div class="not-found-triangle" :style="{ display: displayNoEntry }"></div>
-    <label for="selectAGroup">Which group:</label>
-    <select
-      name="groupSelection"
-      id="selectAGroup"
-      @click="groupSelection($event), findFittingQuestions()"
-    >
-      <option value="">All groups</option>
-      <option :value="idForHtmlAndCss">Basic HTML and CSS</option>
-      <option :value="idForJs">Basic JS</option>
-    </select>
-  </div>
+    <button type="button" class="createQuestion">Create Question</button>
+  </form>
   <ol>
     <li v-for="question of questionsSorted" :key="question.id">
       <pre><span>Question:</span> {{ question.question }}</pre>
@@ -98,7 +104,8 @@ export default {
             const arraySortedByGroup = this.sortByGroup(
               this.backendData.questions
             );
-            this.questionsSorted = arraySortedByGroup;
+
+            this.questionsSortedByDate(arraySortedByGroup);
           }
         } else {
           this.fittingQuestions.length = 0;
@@ -144,7 +151,12 @@ export default {
 </script>
 
 <style scoped>
-.inputArea {
+form {
+  display: flex;
+  flex-direction: column;
+  margin-left: 2.5rem;
+}
+.suggestionAndSelection {
   display: flex;
   position: relative;
   align-items: center;
@@ -159,7 +171,6 @@ label {
 }
 
 .searchElement {
-  margin-left: 2.5rem;
   width: 50vw;
 }
 
@@ -182,6 +193,16 @@ label {
   position: absolute;
   left: 30vw;
   top: 0.8rem;
+}
+
+.createQuestion {
+  width: 13vw;
+  margin-top: 1rem;
+  background-color: rgb(240, 168, 61);
+  font-size: 1.25rem;
+  font-weight: 600;
+  padding-block: 0.5em;
+  border-radius: 0.5em;
 }
 
 ol {
