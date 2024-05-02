@@ -39,8 +39,8 @@ export default {
   name: "AdminControlPanel",
   data() {
     return {
-      backendData: null,
-      questionsSorted: null,
+      backendData: [],
+      questionsSorted: [],
       suggestedQuestion: "",
       fittingQuestions: [],
       displayNoEntry: "none",
@@ -59,43 +59,11 @@ export default {
       // Damit die backend-Daten nicht verändert werden, erstelle ich ein Klon in der Konstanten questions für das spätere Displayen der Fragen
       const questions = structuredClone(whichDataShouldBeSorted);
 
-      // In der Konstanten dateArray wird jeweils das Erstellungsdatum jeder einzelnen Frage gespeichert
-      const dateArray = [];
-      for (let question of questions) {
-        dateArray.push(question.createdAt);
-      }
-
-      // In der Konstanten sortedDates wird dateArray neu geordnet in absteigender Reihenfolge, von neu nach alt
-      const sortedDates = dateArray.sort((a, b) => {
-        return b - a;
+      const sortedQuestionsByDate = questions.sort((a, b) => {
+        return b.createdAt - a.createdAt;
       });
 
-      // Da einige Fragen genau dieselben Dates haben, speichere ich nun erst die einzigartigen IDs der Fragen in der Konstanten sortedIDs
-      const sortedIDs = [];
-      for (let date of sortedDates) {
-        for (let i = 0; i < questions.length; i++) {
-          // In der unteren Zeile schaue ich nun erst, ob das iterierte Datum mit aus sortedDates dem Datum der gerade iterieten Frage übereinstimmt
-          if (date === questions[i].createdAt) {
-            const isIDalreadyIncluded = sortedIDs.includes(questions[i].id);
-            // Da einige Fragen dieselben Dates haben, aber immer einzigartige IDs haben, wird nun die ID der iterierten Frage nur dann gepusht, wenn sie noch nicht in
-            // sortedIDs enthalten ist. Dadurch werden die Ids der Fragen mit den selben Dates auch jeweils gepusht.
-            if (!isIDalreadyIncluded) {
-              sortedIDs.push(questions[i].id);
-            }
-          }
-        }
-      }
-
-      const sortedArray = [];
-      // In der Konstanten sortedArray werden nun alle Fragen von neu nach alt gespeichert
-      for (let id of sortedIDs) {
-        for (let question of questions) {
-          if (id === question.id) {
-            sortedArray.push(question);
-          }
-        }
-      }
-      this.questionsSorted = sortedArray;
+      this.questionsSorted = sortedQuestionsByDate;
     },
     whichGroupIsIt(theGroup) {
       if (theGroup === this.backendData.groups[0].id) {
