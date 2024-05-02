@@ -29,7 +29,10 @@
         <option :value="idForJs">Basic JS</option>
       </select>
     </div>
-    <button type="button" class="createQuestion">Create Question</button>
+    <!-- <button type="button" class="createQuestion">Create Question jdjfd</button> -->
+    <router-link :to="{ name: 'createnewquestion' }" class="createQuestion"
+      >Create new question</router-link
+    >
   </form>
   <ol>
     <li v-for="question of questionsSorted" :key="question.id">
@@ -196,12 +199,15 @@ label {
 }
 
 .createQuestion {
-  width: 13vw;
+  text-decoration: none;
+  width: 15rem;
   margin-top: 1rem;
   background-color: rgb(240, 168, 61);
   font-size: 1.25rem;
   font-weight: 600;
   padding-block: 0.5em;
+  padding-inline: 0.75em;
+  border: 0.15rem solid black;
   border-radius: 0.5em;
 }
 

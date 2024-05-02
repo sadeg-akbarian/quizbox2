@@ -26,6 +26,11 @@ const routes = [
     name: "adminControlPanel",
     component: () => import("../views/AdminControlPanel.vue"),
   },
+  {
+    path: "/createnewquestion",
+    name: "createnewquestion",
+    component: () => import("../views/CreateNewQuestion.vue"),
+  },
 ];
 
 const router = createRouter({
