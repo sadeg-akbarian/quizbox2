@@ -40,8 +40,22 @@ export default {
               "allData",
               JSON.stringify(this.allBackendData)
             );
+            this.whatIsTheLatestDateOfAllQuestions();
           }
         });
+    },
+    whatIsTheLatestDateOfAllQuestions() {
+      const allDates = [];
+      for (let question of this.allBackendData.questions) {
+        const wasDateAlreadyPushed = allDates.includes(question.createdAt);
+        if (wasDateAlreadyPushed === false) {
+          allDates.push(question.createdAt);
+        }
+      }
+      const sortedDates = allDates.sort((a, b) => {
+        return b - a;
+      });
+      localStorage.setItem("latestCreationDate", sortedDates[0]);
     },
   },
   created() {

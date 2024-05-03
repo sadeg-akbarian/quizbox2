@@ -29,7 +29,6 @@
         <option :value="idForJs">Basic JS</option>
       </select>
     </div>
-    <!-- <button type="button" class="createQuestion">Create Question jdjfd</button> -->
     <router-link :to="{ name: 'createnewquestion' }" class="createQuestion"
       >Create new question</router-link
     >
