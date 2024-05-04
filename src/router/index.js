@@ -1,5 +1,5 @@
 import { createRouter, createWebHistory } from "vue-router";
-import HomeView from "../views/HomeView.vue";
+import HomeView from "@/views/HomeView.vue";
 
 const routes = [
   {
@@ -14,22 +14,27 @@ const routes = [
     // this generates a separate chunk (about.[hash].js) for this route
     // which is lazy-loaded when the route is visited.
     component: () =>
-      import(/* webpackChunkName: "about" */ "../views/AboutView.vue"),
+      import(/* webpackChunkName: "about" */ "@/views/AboutView.vue"),
   },
   {
     path: "/data",
     name: "theData",
-    component: () => import("../views/DataView.vue"),
+    component: () => import("@/views/DataView.vue"),
   },
   {
     path: "/admincontrol",
     name: "adminControlPanel",
-    component: () => import("../views/AdminControlPanel.vue"),
+    component: () => import("@/views/AdminControlPanel.vue"),
   },
   {
     path: "/createnewquestion",
     name: "createnewquestion",
-    component: () => import("../views/CreateNewQuestion.vue"),
+    component: () => import("@/views/CreateNewQuestion.vue"),
+  },
+  {
+    path: "/editquestion",
+    name: "editquestion",
+    component: () => import("@/views/EditAQuestion.vue"),
   },
 ];
 
