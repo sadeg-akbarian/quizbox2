@@ -40,7 +40,6 @@ export default {
               "allData",
               JSON.stringify(this.allBackendData)
             );
-            this.whatIsTheLatestDateOfAllQuestions();
           }
         });
     },

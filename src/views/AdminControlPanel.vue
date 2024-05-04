@@ -34,12 +34,45 @@
     >
   </form>
   <ol>
-    <li v-for="question of questionsSorted" :key="question.id">
-      <pre><span>Question:</span> {{ question.question }}</pre>
-      <pre><span>Group:</span> {{ whichGroupIsIt(question.groupId) }}</pre>
-      <pre><span>isActive:</span> {{ question.isActive }}</pre>
+    <li v-for="(question, index) of questionsSorted" :key="question.id">
+      <div class="question-info">
+        <pre><span>Question:</span> {{ question.question }}</pre>
+        <pre><span>Group:</span> {{ whichGroupIsIt(question.groupId) }}</pre>
+        <pre><span>isActive:</span> {{ question.isActive }}</pre>
+      </div>
+      <div class="question-buttons">
+        <router-link
+          :to="{ name: 'editquestion' }"
+          class="editOrDelete"
+          @click="sendQuestionToLocalStorage(question)"
+          >Edit</router-link
+        >
+        <button
+          type="button"
+          class="editOrDelete"
+          @click="
+            (deletePopUpDisplay = 'block'), (indexOfDeleteQuestion = index)
+          "
+        >
+          Delete
+        </button>
+      </div>
     </li>
   </ol>
+  <div class="delete-popup" :style="{ display: deletePopUpDisplay }">
+    <p class="deleteParagraph">Do you really want to delete this question?</p>
+    <div class="two-deleteButtons">
+      <button
+        type="button"
+        @click="(this.deletePopUpDisplay = 'none'), deleteTheQuestion()"
+      >
+        Yes
+      </button>
+      <button type="button" @click="this.deletePopUpDisplay = 'none'">
+        No
+      </button>
+    </div>
+  </div>
 </template>
 
 <script>
@@ -55,13 +88,19 @@ export default {
       whichGroupIsDisplayed: "",
       idForHtmlAndCss: "c76668d0-ce3a-48a7-acd5-0f54ad6818e1",
       idForJs: "9d5ae045-ef9a-4068-bc6c-1b102bda5f55",
-      wasTheGroupChanged: true,
+      wasTheGroupChanged: false,
+      indexOfDeleteQuestion: null,
+      deletePopUpDisplay: "none",
+      localHost: "http://localhost:3000/",
     };
   },
   methods: {
     getDataFromLocalStorage() {
       const allData = JSON.parse(localStorage.getItem("allData"));
       this.backendData = allData;
+    },
+    sendQuestionToLocalStorage(whichQuestion) {
+      localStorage.setItem("questionToEdit", JSON.stringify(whichQuestion));
     },
     questionsSortedByDate(whichDataShouldBeSorted) {
       // Damit die backend-Daten nicht verändert werden, erstelle ich ein Klon in der Konstanten questions für das spätere Displayen der Fragen
@@ -70,7 +109,6 @@ export default {
       const sortedQuestionsByDate = questions.sort((a, b) => {
         return b.createdAt - a.createdAt;
       });
-
       this.questionsSorted = sortedQuestionsByDate;
     },
     whichGroupIsIt(theGroup) {
@@ -144,6 +182,42 @@ export default {
         }
       }
     },
+    fetchAllData(xxx) {
+      fetch(this.localHost + xxx)
+        .then((response) => {
+          if (response.ok === true) {
+            return response.json();
+          } else {
+            alert("Error: Could not be loaded!");
+          }
+        })
+        .then((data) => {
+          this.backendData[xxx] = data;
+          if (xxx === "questions") {
+            localStorage.setItem("allData", JSON.stringify(this.backendData));
+            this.getDataFromLocalStorage();
+            this.questionsSortedByDate(this.backendData.questions);
+          }
+        });
+    },
+    deleteTheQuestion() {
+      const questionToDelete = this.questionsSorted[this.indexOfDeleteQuestion];
+      fetch(this.localHost + "questions/" + questionToDelete.id, {
+        method: "DELETE",
+      })
+        .then((response) => {
+          if (response.ok === true) {
+            return response.json();
+          } else {
+            alert("Error: Questions could not be deleted!!!");
+          }
+        })
+        .then(() => {
+          this.fetchAllData("highscore");
+          this.fetchAllData("groups");
+          this.fetchAllData("questions");
+        });
+    },
   },
   created() {
     this.getDataFromLocalStorage();
@@ -210,6 +284,18 @@ label {
   border-radius: 0.5em;
 }
 
+.editOrDelete {
+  text-decoration: none;
+  text-align: center;
+  color: blue;
+  background-color: lightgray;
+  font-weight: 600;
+  padding-block: 0.5em;
+  padding-inline: 0.75em;
+  border: 0.15rem solid black;
+  border-radius: 0.5em;
+}
+
 ol {
   text-align: left;
   padding-bottom: 1rem;
@@ -219,6 +305,17 @@ li {
   border: 0.25rem solid purple;
   width: 70vw;
   padding: 0.25rem;
+  display: flex;
+  justify-content: space-between;
+  position: relative;
+}
+
+.question-buttons {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  margin-right: 10vw;
+  gap: 1.5rem;
 }
 
 pre {
@@ -228,5 +325,34 @@ pre {
 span {
   margin-left: 1rem;
   background-color: hotpink;
+}
+
+.delete-popup {
+  border: 0.75rem solid green;
+  padding: 4rem;
+  width: 50vw;
+  background-color: rgb(241, 225, 76);
+  position: sticky;
+  left: 25vw;
+  bottom: 40vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.deleteParagraph {
+  font-size: 1.5rem;
+  font-weight: 600;
+}
+
+.two-deleteButtons {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+}
+
+.two-deleteButtons button {
+  padding-block: 0.5rem;
+  padding-inline: 1rem;
 }
 </style>
