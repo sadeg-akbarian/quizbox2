@@ -33,6 +33,9 @@
       <span class="theMinutes">{{ stopWatchMinutes }}</span> :
       <span class="theSeconds">{{ stopWatchSeconds }}</span>
     </p>
+    <div class="displayQuestion-container">
+      <h2>Your choosen quiz questions</h2>
+    </div>
   </div>
 </template>
 
@@ -49,6 +52,10 @@ export default {
       stopWatchMinutes: "00",
       stopWatchSeconds: "00",
       stopWatchDoes: "start",
+      allHtmlAndCssQuestions: [],
+      allJsQuestions: [],
+      quizQuestions: [],
+      quizQuestionNumber: 1,
     };
   },
   methods: {
@@ -81,12 +88,78 @@ export default {
         }
       }, 1000);
     },
+    getTheQuestions() {
+      const arrayNumbers = [];
+      function getRandomNumber(whichGroupOfQuestions) {
+        const randomNumber = Math.floor(
+          Math.random() * whichGroupOfQuestions.length
+        );
+        if (arrayNumbers.includes(randomNumber)) {
+          getRandomNumber(whichGroupOfQuestions);
+        } else {
+          arrayNumbers.push(randomNumber);
+        }
+      }
+      for (let i = 0; i < this.amountOfSelectedQuestions; i++) {
+        if (this.theSelectedGroup === this.idForHtmlAndCss) {
+          getRandomNumber(this.allHtmlAndCssQuestions);
+        } else {
+          getRandomNumber(this.allJsQuestions);
+        }
+      }
+      const arrayOfQuizQuestions = [];
+      if (this.theSelectedGroup === this.idForHtmlAndCss) {
+        for (let number of arrayNumbers) {
+          const currentQuestion = this.allHtmlAndCssQuestions[number];
+          arrayOfQuizQuestions.push(currentQuestion);
+        }
+      } else {
+        for (let number of arrayNumbers) {
+          const currentQuestion = this.allJsQuestions[number];
+          arrayOfQuizQuestions.push(currentQuestion);
+        }
+      }
+      this.quizQuestions = arrayOfQuizQuestions;
+    },
     startTheGame() {
-      this.startStopWatch();
+      if (this.amountOfSelectedQuestions !== 0) {
+        if (this.theSelectedGroup !== "") {
+          this.getTheQuestions();
+          this.startStopWatch();
+        } else {
+          alert("Please choose which group you would like to play!");
+        }
+      } else {
+        alert("Please choose how many questions you would like to play!");
+      }
+    },
+    // howManyQuestionsHasEachGroup() {
+    //   let htmlAndCssGroup = 0;
+    //   let jsGroup = 0;
+    //   for (let question of this.backendData.questions) {
+    //     if (question.groupId === this.idForHtmlAndCss) {
+    //       htmlAndCssGroup++;
+    //     } else {
+    //       jsGroup++;
+    //     }
+    //   }
+    //   this.howManyHtmlAndCssQuestions = htmlAndCssGroup;
+    //   this.howManyJSQuestions = jsGroup;
+    // },
+    createArraysForBothGroups() {
+      for (let question of this.backendData.questions) {
+        if (question.groupId === this.idForHtmlAndCss) {
+          this.allHtmlAndCssQuestions.push(question);
+        } else {
+          this.allJsQuestions.push(question);
+        }
+      }
     },
   },
   created() {
     this.getDataFromLocalStorage();
+    this.createArraysForBothGroups();
+    // this.howManyQuestionsHasEachGroup();
   },
 };
 </script>
@@ -129,6 +202,7 @@ label {
   font-size: 3rem;
   border: 0.5rem solid green;
   max-width: fit-content;
+  margin-inline: auto;
   padding: 1rem;
 }
 
