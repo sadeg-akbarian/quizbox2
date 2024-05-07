@@ -36,6 +36,11 @@ const routes = [
     name: "editquestion",
     component: () => import("@/views/EditAQuestion.vue"),
   },
+  {
+    path: "/resultpage",
+    name: "resultpage",
+    component: () => import("@/views/ResultPage.vue"),
+  },
 ];
 
 const router = createRouter({
