@@ -1,5 +1,5 @@
 <template>
-  <form>
+  <form @submit.prevent>
     <div class="suggestionAndSelection">
       <label for="searchElement">Type in your question</label>
       <input
@@ -136,7 +136,7 @@ export default {
       return newArraySortedByGroup;
     },
     findFittingQuestions() {
-      if (this.wasTheGroupChanged) {
+      if (this.wasTheGroupChanged || this.whichGroupIsDisplayed === "") {
         if (this.suggestedQuestion === "") {
           if (this.whichGroupIsDisplayed === "") {
             this.questionsSortedByDate(this.backendData.questions);

@@ -35,6 +35,9 @@
     </p>
     <div class="displayQuestion-container">
       <h2>Your choosen quiz questions</h2>
+      <p>
+        <span>Question nr.{{ quizQuestionNumber }}: </span><span></span>
+      </p>
     </div>
   </div>
 </template>
