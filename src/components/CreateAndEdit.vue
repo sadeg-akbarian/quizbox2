@@ -57,24 +57,16 @@
         type="radio"
         name="activeButtons"
         id="yes"
-        :checked="radioButtonYes"
-        @click="
-          isQuestionActive('yes'),
-            (radioButtonYes = true),
-            (radioButtonNo = false)
-        "
+        value="true"
+        v-model="isActive"
       />
       <label for="no">No</label
       ><input
         type="radio"
         name="activeButtons"
         id="no"
-        :checked="radioButtonNo"
-        @click="
-          isQuestionActive('no'),
-            (radioButtonNo = true),
-            (radioButtonYes = false)
-        "
+        value="false"
+        v-model="isActive"
       />
     </div>
     <button type="submit" class="submitButton" @click="submitTheQuestion()">
@@ -124,13 +116,6 @@ export default {
       };
       this.answerArray.push(newAnswerObject);
       this.suggestedAnswer = "";
-    },
-    isQuestionActive(id) {
-      if (id === "yes") {
-        this.isActive = true;
-      } else {
-        this.isActive = false;
-      }
     },
     sendTheQuestionToBackend() {
       if (this.whatShouldBeDone.whatShouldBeDone === "Create") {
