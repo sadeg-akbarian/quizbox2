@@ -1,6 +1,5 @@
 <template>
   <div class="whole-area">
-    <h1>Quizbox</h1>
     <form @submit.prevent :style="{ display: formDisplay }">
       <div class="questionContainer">
         <label for="selectQuestions"
@@ -228,16 +227,11 @@ export default {
   position: relative;
 }
 
-h1 {
-  color: blueviolet;
-  text-decoration: underline;
-  font-size: 3rem;
-}
-
 form {
   flex-direction: column;
   gap: 1rem;
   align-items: center;
+  margin-top: 100px;
 }
 
 div {
@@ -256,6 +250,8 @@ label {
 
 .progress-container {
   justify-content: center;
+  position: relative;
+  top: 45px;
 }
 
 .time-display,

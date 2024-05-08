@@ -232,6 +232,7 @@ form {
   display: flex;
   flex-direction: column;
   align-items: center;
+  margin-top: 30px;
 }
 
 label {
