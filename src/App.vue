@@ -1,14 +1,40 @@
 <template>
-  <nav>
-    <router-link :to="{ name: 'home' }">Home</router-link> |
-    <router-link :to="{ name: 'theData' }">Data</router-link> |
-    <router-link :to="{ name: 'adminControlPanel' }"
-      >Admin Control Panel</router-link
-    >
-    |
-    <router-link :to="{ name: 'about' }">About</router-link>
-  </nav>
-  <router-view />
+  <div class="root-whole-area">
+    <div class="menu-container">
+      <img
+        src="@/assets/menu.png"
+        alt="menu-icon"
+        :style="{ display: showMenuIcon }"
+        @click="displayMenu($event)"
+      />
+      <img
+        src="@/assets/close.png"
+        alt="close-icon"
+        :style="{ display: showCloseIcon }"
+        @click="displayMenu($event)"
+      />
+      <h1>Quizbox</h1>
+    </div>
+    <nav :style="{ display: showNav }">
+      <router-link :to="{ name: 'home' }" @click="displayMenu($event)"
+        >Home</router-link
+      >
+      <router-link :to="{ name: 'theData' }" @click="displayMenu($event)"
+        >Data</router-link
+      >
+      <router-link
+        :to="{ name: 'adminControlPanel' }"
+        @click="displayMenu($event)"
+        >Admin Control Panel</router-link
+      >
+
+      <router-link :to="{ name: 'about' }" @click="displayMenu($event)"
+        >About</router-link
+      >
+    </nav>
+    <div class="theTriangle"></div>
+    <router-view />
+  </div>
 </template>
 
 <script>
@@ -21,6 +47,9 @@ export default {
         groups: null,
         questions: null,
       },
+      showMenuIcon: "block",
+      showCloseIcon: "none",
+      showNav: "none",
     };
   },
   methods: {
@@ -42,6 +71,20 @@ export default {
             );
           }
         });
+    },
+    displayMenu(event) {
+      if (event.target.alt === "menu-icon") {
+        this.showMenuIcon = "none";
+        this.showCloseIcon = "block";
+        this.showNav = "flex";
+      } else if (
+        event.target.alt === "close-icon" ||
+        event.srcElement.localName === "a"
+      ) {
+        this.showMenuIcon = "block";
+        this.showCloseIcon = "none";
+        this.showNav = "none";
+      }
     },
   },
   created() {
@@ -72,8 +115,40 @@ body {
   color: #2c3e50;
 }
 
+.menu-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 1rem;
+  background-color: #42b983;
+  padding-top: 30px;
+}
+
+img {
+  width: 2rem;
+  height: 2rem;
+}
+
+h1 {
+  margin-block: 0;
+  font-size: 3rem;
+  text-shadow: 0.25rem 0.25rem lightgray;
+}
+
+.theTriangle {
+  width: 0;
+  height: 0;
+  border-left: 50vw solid transparent;
+  border-right: 50vw solid transparent;
+  border-top: 20px solid #42b983;
+  position: absolute;
+  z-index: 1;
+}
+
 nav {
   padding: 30px;
+  flex-direction: column;
+  background-color: #42b983;
 }
 
 nav a {
@@ -82,6 +157,6 @@ nav a {
 }
 
 nav a.router-link-exact-active {
-  color: #42b983;
+  color: #424ab9;
 }
 </style>

@@ -231,6 +231,7 @@ form {
   display: flex;
   flex-direction: column;
   margin-left: 2.5rem;
+  margin-top: 55px;
 }
 .suggestionAndSelection {
   display: flex;

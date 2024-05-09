@@ -232,6 +232,7 @@ form {
   display: flex;
   flex-direction: column;
   align-items: center;
+  margin-top: 30px;
 }
 
 label {
@@ -249,6 +250,12 @@ textarea,
 select,
 form {
   margin-bottom: 4rem;
+}
+
+h1 {
+  margin-block: 1rem;
+  font-size: 3rem;
+  text-shadow: none;
 }
 
 table {

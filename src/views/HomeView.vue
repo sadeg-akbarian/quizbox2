@@ -1,7 +1,6 @@
 <template>
   <div class="whole-area">
-    <h1>Quizbox</h1>
-    <form @submit.prevent :style="{ display: formDisplay }">
+    <form @submit.prevent v-show="!quizStarted">
       <div class="questionContainer">
         <label for="selectQuestions"
           >With how many questions would you like to play?</label
@@ -28,20 +27,30 @@
         Start the quiz
       </button>
     </form>
-    <div class="progress-container" :style="{ display: showProgessContainer }">
+    <div class="progress-container" v-show="quizStarted">
       <p class="time-display">
         <span class="stopWatch">Stopwatch</span>
         <span class="theMinutes">{{ stopWatchMinutes }}</span> :
         <span class="theSeconds">{{ stopWatchSeconds }}</span>
       </p>
-      <p class="visible-progress-indicator">
+      <p
+        class="visible-progress-indicator"
+        :style="{
+          backgroundImage:
+            'linear-gradient(to right, #42b9b3 ' +
+            progessIndicatorBackgroundSize +
+            '%, transparent ' +
+            progessIndicatorBackgroundSize +
+            '%)',
+        }"
+      >
         <span class="finishedQuestions">Finished questions</span
         ><span
           >{{ currentDisplayedQuestion }} of {{ quizQuestions.length }}</span
         >
       </p>
     </div>
-    <h2>Your choosen quiz questions</h2>
+    <h2 v-if="quizStarted">Your choosen quiz questions</h2>
     <template
       v-for="(question, indexOfQuestions) of quizQuestions"
       :key="question.createdAt"
@@ -89,8 +98,6 @@ export default {
       theSelectedGroup: "",
       idForHtmlAndCss: "c76668d0-ce3a-48a7-acd5-0f54ad6818e1",
       idForJs: "9d5ae045-ef9a-4068-bc6c-1b102bda5f55",
-      formDisplay: "flex",
-      showProgessContainer: "none",
       stopWatchMinutes: "00",
       stopWatchSeconds: "00",
       stopWatchDoes: "start",
@@ -99,7 +106,15 @@ export default {
       quizQuestions: [],
       answeredQuizQuestions: [],
       currentDisplayedQuestion: 0,
+      quizStarted: false,
     };
+  },
+  computed: {
+    progessIndicatorBackgroundSize() {
+      return (
+        (this.currentDisplayedQuestion / this.amountOfSelectedQuestions) * 100
+      );
+    },
   },
   methods: {
     getDataFromLocalStorage() {
@@ -175,9 +190,8 @@ export default {
     startTheGame() {
       if (this.amountOfSelectedQuestions !== 0) {
         if (this.theSelectedGroup !== "") {
-          this.formDisplay = "none";
           this.getTheQuestions();
-          this.showProgessContainer = "flex";
+          this.quizStarted = true;
           this.startStopWatch();
         } else {
           alert("Please choose which group you would like to play!");
@@ -228,16 +242,12 @@ export default {
   position: relative;
 }
 
-h1 {
-  color: blueviolet;
-  text-decoration: underline;
-  font-size: 3rem;
-}
-
 form {
+  display: flex;
   flex-direction: column;
   gap: 1rem;
   align-items: center;
+  margin-top: 100px;
 }
 
 div {
@@ -255,13 +265,16 @@ label {
 }
 
 .progress-container {
+  display: flex;
   justify-content: center;
+  position: relative;
+  top: 45px;
 }
 
 .time-display,
 .visible-progress-indicator {
   font-size: 3rem;
-  border: 0.5rem solid green;
+  border: 0.5rem solid #42b9b3;
   max-width: fit-content;
   margin-top: 0;
   padding: 1rem;
@@ -272,10 +285,6 @@ label {
   display: block;
   font-size: 1rem;
   text-decoration: underline;
-}
-
-.visible-progress-indicator {
-  border: 0.5rem solid blue;
 }
 
 .displayQuestion-container {
