@@ -1,6 +1,6 @@
 <template>
   <div class="whole-area">
-    <form @submit.prevent :style="{ display: formDisplay }">
+    <form @submit.prevent v-show="!quizStarted">
       <div class="questionContainer">
         <label for="selectQuestions"
           >With how many questions would you like to play?</label
@@ -27,7 +27,7 @@
         Start the quiz
       </button>
     </form>
-    <div class="progress-container" :style="{ display: showProgessContainer }">
+    <div class="progress-container" v-show="quizStarted">
       <p class="time-display">
         <span class="stopWatch">Stopwatch</span>
         <span class="theMinutes">{{ stopWatchMinutes }}</span> :
@@ -50,7 +50,7 @@
         >
       </p>
     </div>
-    <h2>Your choosen quiz questions</h2>
+    <h2 v-if="quizStarted">Your choosen quiz questions</h2>
     <template
       v-for="(question, indexOfQuestions) of quizQuestions"
       :key="question.createdAt"
@@ -98,8 +98,6 @@ export default {
       theSelectedGroup: "",
       idForHtmlAndCss: "c76668d0-ce3a-48a7-acd5-0f54ad6818e1",
       idForJs: "9d5ae045-ef9a-4068-bc6c-1b102bda5f55",
-      formDisplay: "flex",
-      showProgessContainer: "none",
       stopWatchMinutes: "00",
       stopWatchSeconds: "00",
       stopWatchDoes: "start",
@@ -108,6 +106,7 @@ export default {
       quizQuestions: [],
       answeredQuizQuestions: [],
       currentDisplayedQuestion: 0,
+      quizStarted: false,
     };
   },
   computed: {
@@ -191,9 +190,8 @@ export default {
     startTheGame() {
       if (this.amountOfSelectedQuestions !== 0) {
         if (this.theSelectedGroup !== "") {
-          this.formDisplay = "none";
           this.getTheQuestions();
-          this.showProgessContainer = "flex";
+          this.quizStarted = true;
           this.startStopWatch();
         } else {
           alert("Please choose which group you would like to play!");
@@ -245,6 +243,7 @@ export default {
 }
 
 form {
+  display: flex;
   flex-direction: column;
   gap: 1rem;
   align-items: center;
@@ -266,6 +265,7 @@ label {
 }
 
 .progress-container {
+  display: flex;
   justify-content: center;
   position: relative;
   top: 45px;
