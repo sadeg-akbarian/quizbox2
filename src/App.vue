@@ -131,6 +131,8 @@ img {
 
 h1 {
   margin-block: 0;
+  font-size: 3rem;
+  text-shadow: 0.25rem 0.25rem lightgray;
 }
 
 .theTriangle {

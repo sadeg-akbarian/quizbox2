@@ -252,6 +252,12 @@ form {
   margin-bottom: 4rem;
 }
 
+h1 {
+  margin-block: 1rem;
+  font-size: 3rem;
+  text-shadow: none;
+}
+
 table {
   margin-inline: auto;
   border-collapse: collapse;

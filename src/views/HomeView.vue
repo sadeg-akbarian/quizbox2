@@ -33,7 +33,17 @@
         <span class="theMinutes">{{ stopWatchMinutes }}</span> :
         <span class="theSeconds">{{ stopWatchSeconds }}</span>
       </p>
-      <p class="visible-progress-indicator">
+      <p
+        class="visible-progress-indicator"
+        :style="{
+          backgroundImage:
+            'linear-gradient(to right, #42b9b3 ' +
+            progessIndicatorBackgroundSize +
+            '%, transparent ' +
+            progessIndicatorBackgroundSize +
+            '%)',
+        }"
+      >
         <span class="finishedQuestions">Finished questions</span
         ><span
           >{{ currentDisplayedQuestion }} of {{ quizQuestions.length }}</span
@@ -99,6 +109,13 @@ export default {
       answeredQuizQuestions: [],
       currentDisplayedQuestion: 0,
     };
+  },
+  computed: {
+    progessIndicatorBackgroundSize() {
+      return (
+        (this.currentDisplayedQuestion / this.amountOfSelectedQuestions) * 100
+      );
+    },
   },
   methods: {
     getDataFromLocalStorage() {
@@ -257,7 +274,7 @@ label {
 .time-display,
 .visible-progress-indicator {
   font-size: 3rem;
-  border: 0.5rem solid green;
+  border: 0.5rem solid #42b9b3;
   max-width: fit-content;
   margin-top: 0;
   padding: 1rem;
@@ -268,10 +285,6 @@ label {
   display: block;
   font-size: 1rem;
   text-decoration: underline;
-}
-
-.visible-progress-indicator {
-  border: 0.5rem solid blue;
 }
 
 .displayQuestion-container {
