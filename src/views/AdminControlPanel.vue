@@ -22,9 +22,10 @@
       <select
         name="groupSelection"
         id="selectAGroup"
-        @click="groupSelection($event), findFittingQuestions()"
+        v-model="whichGroupIsDisplayed"
       >
-        <option value="">All groups</option>
+        <!-- @click="groupSelection($event), findFittingQuestions()" -->
+        <option value="all">All groups</option>
         <option :value="idForHtmlAndCss">Basic HTML and CSS</option>
         <option :value="idForJs">Basic JS</option>
       </select>
@@ -33,8 +34,34 @@
       >Create new question</router-link
     >
   </form>
-  <ol>
+  <!-- <ol>
     <li v-for="(question, index) of questionsSorted" :key="question.id">
+      <div class="question-info">
+        <pre><span>Question:</span> {{ question.question }}</pre>
+        <pre><span>Group:</span> {{ whichGroupIsIt(question.groupId) }}</pre>
+        <pre><span>isActive:</span> {{ question.isActive }}</pre>
+      </div>
+      <div class="question-buttons">
+        <router-link
+          :to="{ name: 'editquestion' }"
+          class="editOrDelete"
+          @click="sendQuestionToLocalStorage(question)"
+          >Edit</router-link
+        >
+        <button
+          type="button"
+          class="editOrDelete"
+          @click="
+            (deletePopUpDisplay = 'block'), (indexOfDeleteQuestion = index)
+          "
+        >
+          Delete
+        </button>
+      </div>
+    </li>
+  </ol> -->
+  <ol>
+    <li v-for="(question, index) of filteredQuestions" :key="question.id">
       <div class="question-info">
         <pre><span>Question:</span> {{ question.question }}</pre>
         <pre><span>Group:</span> {{ whichGroupIsIt(question.groupId) }}</pre>
@@ -80,12 +107,12 @@ export default {
   name: "AdminControlPanel",
   data() {
     return {
-      backendData: [],
-      questionsSorted: [],
+      backendData: {},
+      // questionsSorted: [],
       suggestedQuestion: "",
       fittingQuestions: [],
       displayNoEntry: "none",
-      whichGroupIsDisplayed: "",
+      whichGroupIsDisplayed: "all",
       idForHtmlAndCss: "c76668d0-ce3a-48a7-acd5-0f54ad6818e1",
       idForJs: "9d5ae045-ef9a-4068-bc6c-1b102bda5f55",
       wasTheGroupChanged: false,
@@ -93,6 +120,20 @@ export default {
       deletePopUpDisplay: "none",
       localHost: "http://localhost:3000/",
     };
+  },
+  computed: {
+    filteredQuestions() {
+      const questionsSortedByDate = this.questionsSortedByDate(
+        this.backendData.questions
+      );
+      const fittedQuestions = this.findFittingQuestions(questionsSortedByDate);
+      if (this.whichGroupIsDisplayed === "all") {
+        return fittedQuestions;
+      }
+      return fittedQuestions.filter(
+        (question) => question.groupId === this.whichGroupIsDisplayed
+      );
+    },
   },
   methods: {
     getDataFromLocalStorage() {
@@ -109,7 +150,8 @@ export default {
       const sortedQuestionsByDate = questions.sort((a, b) => {
         return b.createdAt - a.createdAt;
       });
-      this.questionsSorted = sortedQuestionsByDate;
+      // this.questionsSorted = sortedQuestionsByDate;
+      return sortedQuestionsByDate;
     },
     whichGroupIsIt(theGroup) {
       if (theGroup === this.backendData.groups[0].id) {
@@ -135,52 +177,61 @@ export default {
       }
       return newArraySortedByGroup;
     },
-    findFittingQuestions() {
-      if (this.wasTheGroupChanged || this.whichGroupIsDisplayed === "") {
-        if (this.suggestedQuestion === "") {
-          if (this.whichGroupIsDisplayed === "") {
-            this.questionsSortedByDate(this.backendData.questions);
-          } else {
-            const arraySortedByGroup = this.sortByGroup(
-              this.backendData.questions
-            );
-
-            this.questionsSortedByDate(arraySortedByGroup);
-          }
-        } else {
-          this.fittingQuestions.length = 0;
-          const suggestedQuestionInLowCase =
-            this.suggestedQuestion.toLowerCase();
-          for (let question of this.backendData.questions) {
-            const givenQuestionsInLowCase = question.question.toLowerCase();
-            const isItIncluded = givenQuestionsInLowCase.includes(
-              suggestedQuestionInLowCase
-            );
-            if (isItIncluded) {
-              this.fittingQuestions.push(question);
-            }
-          }
-          if (this.fittingQuestions.length > 0) {
-            if (this.whichGroupIsDisplayed === "") {
-              this.questionsSortedByDate(this.fittingQuestions);
-            } else {
-              const fittingQuestionsSortedByGroup = [];
-              for (let question of this.fittingQuestions) {
-                if (question.groupId === this.whichGroupIsDisplayed) {
-                  fittingQuestionsSortedByGroup.push(question);
-                }
-              }
-              if (fittingQuestionsSortedByGroup.length > 0) {
-                this.questionsSortedByDate(fittingQuestionsSortedByGroup);
-              } else {
-                this.displayNoEntry = "block";
-              }
-            }
-          } else {
-            this.displayNoEntry = "block";
-          }
-        }
+    findFittingQuestions(xxx) {
+      const fittingQuestions = xxx.filter((question) =>
+        question.question
+          .toLowerCase()
+          .includes(this.suggestedQuestion.toLowerCase())
+      );
+      if (fittingQuestions.length === 0) {
+        this.displayNoEntry = "block";
       }
+      return fittingQuestions;
+      // if (this.wasTheGroupChanged || this.whichGroupIsDisplayed === "") {
+      //   if (this.suggestedQuestion === "") {
+      //     if (this.whichGroupIsDisplayed === "") {
+      //       this.questionsSortedByDate(this.backendData.questions);
+      //     } else {
+      //       const arraySortedByGroup = this.sortByGroup(
+      //         this.backendData.questions
+      //       );
+
+      //       this.questionsSortedByDate(arraySortedByGroup);
+      //     }
+      //   } else {
+      //     this.fittingQuestions.length = 0;
+      //     const suggestedQuestionInLowCase =
+      //       this.suggestedQuestion.toLowerCase();
+      //     for (let question of this.backendData.questions) {
+      //       const givenQuestionsInLowCase = question.question.toLowerCase();
+      //       const isItIncluded = givenQuestionsInLowCase.includes(
+      //         suggestedQuestionInLowCase
+      //       );
+      //       if (isItIncluded) {
+      //         this.fittingQuestions.push(question);
+      //       }
+      //     }
+      //     if (this.fittingQuestions.length > 0) {
+      //       if (this.whichGroupIsDisplayed === "") {
+      //         this.questionsSortedByDate(this.fittingQuestions);
+      //       } else {
+      //         const fittingQuestionsSortedByGroup = [];
+      //         for (let question of this.fittingQuestions) {
+      //           if (question.groupId === this.whichGroupIsDisplayed) {
+      //             fittingQuestionsSortedByGroup.push(question);
+      //           }
+      //         }
+      //         if (fittingQuestionsSortedByGroup.length > 0) {
+      //           this.questionsSortedByDate(fittingQuestionsSortedByGroup);
+      //         } else {
+      //           this.displayNoEntry = "block";
+      //         }
+      //       }
+      //     } else {
+      //       this.displayNoEntry = "block";
+      //     }
+      //   }
+      // }
     },
     fetchAllData(xxx) {
       fetch(this.localHost + xxx)
