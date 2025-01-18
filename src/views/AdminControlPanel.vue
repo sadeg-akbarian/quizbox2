@@ -108,7 +108,7 @@ export default {
   data() {
     return {
       backendData: {},
-      // questionsSorted: [],
+      questionsSorted: [],
       suggestedQuestion: "",
       fittingQuestions: [],
       displayNoEntry: "none",
@@ -150,7 +150,7 @@ export default {
       const sortedQuestionsByDate = questions.sort((a, b) => {
         return b.createdAt - a.createdAt;
       });
-      // this.questionsSorted = sortedQuestionsByDate;
+      this.questionsSorted = sortedQuestionsByDate;
       return sortedQuestionsByDate;
     },
     whichGroupIsIt(theGroup) {
@@ -252,6 +252,7 @@ export default {
         });
     },
     deleteTheQuestion() {
+      console.log(this.indexOfDeleteQuestion);
       const questionToDelete = this.questionsSorted[this.indexOfDeleteQuestion];
       fetch(this.localHost + "questions/" + questionToDelete.id, {
         method: "DELETE",

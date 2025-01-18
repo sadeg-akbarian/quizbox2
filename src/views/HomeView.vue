@@ -119,6 +119,7 @@ export default {
   methods: {
     getDataFromLocalStorage() {
       const allData = JSON.parse(localStorage.getItem("allData"));
+      console.log(allData);
       this.backendData = allData;
     },
     createArraysForBothGroups() {
