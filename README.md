@@ -1,5 +1,6 @@
 # quizbox2
 
+Coded with Node Version 20.10.0
 Please first install the following API on your device: https://github.com/sadeg-akbarian/api-for-quizbox
 
 ## Project setup
